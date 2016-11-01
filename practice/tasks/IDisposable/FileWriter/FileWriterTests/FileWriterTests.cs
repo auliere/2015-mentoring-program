@@ -14,16 +14,16 @@ namespace FileWriterTests
         public void DisposeDoesWork()
         {
             var fileWriter = new FileWriter(TestFileName);
-            //Assert.DoesNotThrow(fileWriter.Dispose);
+            Assert.DoesNotThrow(fileWriter.Dispose);
         }
 
         [Test]
-        public void DisposingCanBeCalledTwise()
+        public void DisposingCanBeCalledTwiсe()
         {
             var fileWriter = new FileWriter(TestFileName);
 
-            //fileWriter.Dispose();            
-            //Assert.DoesNotThrow(fileWriter.Dispose);
+            fileWriter.Dispose();            
+            Assert.DoesNotThrow(fileWriter.Dispose);
         }
 
         [Test]
@@ -43,9 +43,8 @@ namespace FileWriterTests
         public void WriteFewWordsDoesWork()
         {
             const string testLine = "TestLine";
-            var extectedStr = String.Format("{0}{0}{0}{0}", testLine);
-            var fileWriter = new FileWriter(TestFileName);
-           /* using (var fileWriter = new FileWriter(TestFileName))*/
+            var extectedStr = String.Format("{0}{0}{0}{0}", testLine);            
+            using (var fileWriter = new FileWriter(TestFileName))
             {
                 fileWriter.Write(testLine);
                 fileWriter.Write(testLine);
@@ -67,13 +66,12 @@ namespace FileWriterTests
             const string testLine = "TestLine";
             var extectedStr = String.Format("{0}{1}{0}{1}{0}{1}{0}", testLine, Environment.NewLine);
 
-            var fileWriter = new FileWriter(TestFileName);
-            //using (var fileWriter = new FileWriter(TestFileName))
+            using (var fileWriter = new FileWriter(TestFileName))
             {
                 fileWriter.WriteLine(testLine);
                 fileWriter.WriteLine(testLine);
                 fileWriter.WriteLine(testLine);
-                fileWriter.WriteLine(testLine);
+                fileWriter.Write(testLine);
             }
 
             using (var fileStream = File.OpenRead(TestFileName))

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Convestudo.Unmanaged
 {
@@ -22,6 +23,10 @@ namespace Convestudo.Unmanaged
         [DllImport("kernel32.dll", SetLastError = true)]
         internal static extern IntPtr CreateFile(string lpFileName, DesiredAccess dwDesiredAccess, ShareMode dwShareMode, IntPtr lpSecurityAttributes, CreationDisposition dwCreationDisposition, FlagsAndAttributes dwFlagsAndAttributes, IntPtr hTemplateFile);
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        internal static extern bool CloseHandle(IntPtr handle);
+
+
         /// <summary>
         /// Writes data into a file
         /// </summary>
@@ -36,8 +41,12 @@ namespace Convestudo.Unmanaged
 
         private void ThrowLastWin32Err()
         {
-            Marshal.ThrowExceptionForHR(
-             Marshal.GetHRForLastWin32Error());
+            var err = Marshal.GetHRForLastWin32Error();
+            if ((err & 0xffff) != 0 && (err & 0xffff) != 183)
+            {
+                Marshal.ThrowExceptionForHR(
+                    Marshal.GetHRForLastWin32Error());
+            }            
         }
 
         public FileWriter(string fileName)
@@ -47,7 +56,7 @@ namespace Convestudo.Unmanaged
                 DesiredAccess.Write,
                 ShareMode.None, 
                 IntPtr.Zero, 
-                CreationDisposition.CreateAlways,
+                CreationDisposition.OpenAlways,
                 FlagsAndAttributes.Normal,
                 IntPtr.Zero);
 
@@ -59,7 +68,6 @@ namespace Convestudo.Unmanaged
             var bytes = GetBytes(str);
             uint bytesWritten = 0;
             WriteFile(_fileHandle, bytes, (uint) bytes.Length, ref bytesWritten, IntPtr.Zero);
-            //throw new System.NotImplementedException();
         }
 
         public void WriteLine(string str)
@@ -73,10 +81,42 @@ namespace Convestudo.Unmanaged
         /// <param name="str"></param>
         /// <returns></returns>
         static byte[] GetBytes(string str)
-        {
-            var bytes = new byte[str.Length * sizeof(char)];
-            Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+        {            
+            var bytes = new byte[str.Length];
+            Buffer.BlockCopy(Encoding.ASCII.GetBytes(str), 0, bytes, 0, bytes.Length);
             return bytes;
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                }
+
+                CloseHandle(_fileHandle);
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+                
+        ~FileWriter() {          
+          Dispose(false);
+        }
+        
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

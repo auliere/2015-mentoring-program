@@ -56,4 +56,5 @@ namespace Convestudo.Unmanaged
         Normal = 0x80
         //and others, see WinApi documentation
     }
+
 }

@@ -29,7 +29,6 @@ namespace NetMentoring
             {
                 if (disposing)
                 {                   
-                    streamWriter.Flush();
                     streamWriter.Dispose();
                     memoryStream.Dispose();
                 }

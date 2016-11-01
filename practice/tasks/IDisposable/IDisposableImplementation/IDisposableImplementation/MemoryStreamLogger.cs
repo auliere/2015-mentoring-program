@@ -28,11 +28,10 @@ namespace NetMentoring
             if (!disposedValue)
             {
                 if (disposing)
-                {
+                {                   
                     streamWriter.Flush();
-                    streamWriter.Close();
-                    streamWriter = null;
-                    memoryStream = null;
+                    streamWriter.Dispose();
+                    memoryStream.Dispose();
                 }
 
                 disposedValue = true;
@@ -42,6 +41,7 @@ namespace NetMentoring
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
         #endregion
 

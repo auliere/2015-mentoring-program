@@ -1,8 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace NetMentoring
 {
-    public class MemoryStreamLogger
+    public class MemoryStreamLogger : IDisposable
     {
         private FileStream memoryStream;
         private StreamWriter streamWriter;
@@ -10,13 +11,39 @@ namespace NetMentoring
         public MemoryStreamLogger()
         {
             memoryStream = new FileStream(@"\log.txt", FileMode.OpenOrCreate);
+            memoryStream.Seek(0, SeekOrigin.End);
             streamWriter = new StreamWriter(memoryStream);
         }
 
         public void Log(string message)
         {
-            streamWriter.Write(message);
+            streamWriter.WriteLine(message);
         }
 
-   }
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                    streamWriter = null;
+                    memoryStream = null;
+                }
+
+                disposedValue = true;
+            }
+        }
+        
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
+
+    }
 }

@@ -7,7 +7,7 @@ namespace NetMentoring
         private static void Main(string[] args)
         {            
             for(var i = 0; i < 10000; i++)
-                WriteLog("Interation number #" + i);
+                WriteLog("Iteration number #" + i);
 
             Console.WriteLine("Finished");
             Console.ReadKey();
@@ -17,6 +17,7 @@ namespace NetMentoring
         {
             var logger = new MemoryStreamLogger();
             logger.Log(str);
+            logger.Dispose();
         }
     }
 }

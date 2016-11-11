@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -44,8 +45,9 @@ namespace Convestudo.Unmanaged
             var err = Marshal.GetHRForLastWin32Error();
             if ((err & 0xffff) != 0 && (err & 0xffff) != 183)
             {
-                Marshal.ThrowExceptionForHR(
-                    Marshal.GetHRForLastWin32Error());
+                //Marshal.ThrowExceptionForHR(
+                  //Marshal.GetHRForLastWin32Error());
+                throw new IOException("0x" + Marshal.GetHRForLastWin32Error().ToString("X8"));
             }            
         }
 
@@ -56,10 +58,10 @@ namespace Convestudo.Unmanaged
                 DesiredAccess.Write,
                 ShareMode.None, 
                 IntPtr.Zero, 
-                CreationDisposition.OpenAlways,
+                CreationDisposition.CreateAlways,
                 FlagsAndAttributes.Normal,
                 IntPtr.Zero);
-
+            
             ThrowLastWin32Err();
         }
 
@@ -88,7 +90,7 @@ namespace Convestudo.Unmanaged
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue = false; 
 
         protected virtual void Dispose(bool disposing)
         {
@@ -100,10 +102,6 @@ namespace Convestudo.Unmanaged
                 }
 
                 CloseHandle(_fileHandle);
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
                 disposedValue = true;
             }
         }
@@ -115,7 +113,7 @@ namespace Convestudo.Unmanaged
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(this);
+            //GC.SuppressFinalize(this);
         }
         #endregion
     }

@@ -18,7 +18,7 @@ namespace FileWriterTests
         }
 
         [Test]
-        public void DisposingCanBeCalledTwiсe()
+        public void DisposingCanBeCalledTwice()
         {
             var fileWriter = new FileWriter(TestFileName);
 
@@ -43,7 +43,7 @@ namespace FileWriterTests
         public void WriteFewWordsDoesWork()
         {
             const string testLine = "TestLine";
-            var extectedStr = String.Format("{0}{0}{0}{0}", testLine);            
+            var extectedStr = String.Format("{0}{0}{0}{0}", testLine);
             using (var fileWriter = new FileWriter(TestFileName))
             {
                 fileWriter.Write(testLine);
@@ -65,7 +65,7 @@ namespace FileWriterTests
         {
             const string testLine = "TestLine";
             var extectedStr = String.Format("{0}{1}{0}{1}{0}{1}{0}", testLine, Environment.NewLine);
-
+            
             using (var fileWriter = new FileWriter(TestFileName))
             {
                 fileWriter.WriteLine(testLine);

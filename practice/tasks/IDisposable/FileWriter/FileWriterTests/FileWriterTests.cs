@@ -29,14 +29,16 @@ namespace FileWriterTests
         [Test]
         public void ResourceIsLocked()
         {
-            var fileWriter1 = new FileWriter(TestFileName);
-            fileWriter1.Write("Test");
-
-            Assert.Throws<IOException>(() =>
+            using (var fileWriter1 = new FileWriter(TestFileName))
             {
-                var file2 = new FileWriter(TestFileName);
-                file2.Write("adsf");
-            });
+                fileWriter1.Write("Test");
+
+                Assert.Throws<IOException>(() =>
+                {
+                    var file2 = new FileWriter(TestFileName);
+                    file2.Write("adsf");
+                });
+            }
         }
 
         [Test]
